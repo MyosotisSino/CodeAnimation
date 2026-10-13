@@ -57,14 +57,6 @@ cell — so scale is read off the sheet, not guessed on set.
 
 ![Character cast](stills/sheet-jobs.jpg)
 
-**Five views**, so a turn is interpolated instead of popping:
-
-![Views](stills/sheet-views.jpg)
-
-**Expressions**, each a full rig of mouth, eyes, lids, blush and posture:
-
-![Expressions](stills/sheet-emotions.jpg)
-
 **Props**, sized against the same reference figure:
 
 ![Props](stills/sheet-props.jpg)
