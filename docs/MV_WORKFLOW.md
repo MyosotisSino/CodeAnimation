@@ -1,8 +1,8 @@
 # MV_WORKFLOW — 在本仓库用歌曲做一支手绘 MV 的完整流程
 
 > 面向任意 AI 编码智能体。前置阅读：`ANIMATION_GUIDE.md`（必读，规则与引擎 API）。
-> 本文档是"从歌到片"的工序层：已由《Whisper Of Hope》MV（snow.js/tree.js 之前的 whisper.js，成品 2:34）
-> 与《雪夜灯火》（snow.js，5:31）两次全程验证。环境：Windows 11 + Intel Arc iGPU + Chrome。
+> 本文档是"从歌到片"的工序层：已由《Seed of The Light》两部连映（snow.js + tree.js，8:09）全程验证。
+> 环境：Windows 11 + Intel Arc iGPU + Chrome。
 
 ## 0. 环境（本机已就绪，换机重做）
 - Node ≥ 20，Chrome 在默认位置（render.mjs 自动探测）。

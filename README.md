@@ -97,6 +97,14 @@ node render.mjs --encode --out=out/part1.mp4
 **音轨不在仓库里**（版权与授权原因未随代码分发）。要带声出片，把 `--audio=<你的音乐文件>` 加到
 `--encode` 上即可；`src/config.js` 里的 `audio` 字段同理，指向本地文件。不加这个参数也能出片，只是静音。
 
+### 文档里提到、但刻意没打包的东西
+
+| 路径 | 为什么没有 |
+|---|---|
+| `bin/ffmpeg.exe` | 第三方二进制，自行安装即可（`render.mjs` 会直接 spawn `ffmpeg`） |
+| `assets/*.mp3` / `*.m4a` | 音轨授权不明，不随仓库分发 |
+| `tools/` | 一次性分析脚本，未纳入版本管理，也不属于引擎 |
+
 ---
 
 ## 模板库 `templates/`
