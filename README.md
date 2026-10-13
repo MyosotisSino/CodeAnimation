@@ -1,5 +1,7 @@
 # CodeAnimation
 
+![冰湖下的三张坏脸——紫火把、蓝提灯、绿灯笼](stills/hero.jpg)
+
 **用纯代码画动画，而不是用扩散模型生成画面。**
 
 > *Creating animations with pure coding instead of any diffusion model.*
