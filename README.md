@@ -2,9 +2,9 @@
 
 **用纯代码画动画，而不是用扩散模型生成画面。**
 
-这里存放的是一套手绘风 2D 动画引擎，以及用它做出来的作品。引擎与作品分开：引擎不认识任何一部片子的剧情，每一部作品只是"一个场景文件 + 一个入口 html + 一段配置"。
+> *Creating animations with pure coding instead of any diffusion model.*
 
-> Repository description: *Creating animations with pure coding instead of any diffusion model.*
+这里存放的是一套手绘风 2D 动画引擎，以及用它做出来的作品。引擎与作品分开：引擎不认识任何一部片子的剧情，每一部作品只是"一个场景文件 + 一个入口 html + 一段配置"。
 
 ---
 
