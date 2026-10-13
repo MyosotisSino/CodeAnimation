@@ -12,8 +12,9 @@
 
 | 作品 | 长度 | 规格 | 状态 |
 |---|---|---|---|
-| **《Seed of The Light》**（两部连映：《雪夜灯火》+《最后一棵树》） | 8′09″ | 1920×1080 @ 24 fps，11 732 帧 | 处女座 · 已完成 |
-| **《Whisper Of Hope》** | 2′34″ | 同引擎早期作品 | 场景文件保留为参考实现 |
+| **《Seed of The Light》**（两部连映：《雪夜灯火》+《最后一棵树》） | 8′09″ | 1920×1080 @ 24 fps，11 732 帧 | 处女作 · 已完成 |
+
+引擎不为这一部写死；下一部作品会沿用同一套 `core / clawd / props / jobs`，只换场景文件与配置。
 
 ### 《Seed of The Light》
 
@@ -27,8 +28,10 @@
 
 ![Seed of The Light — Part II](stills/seed-of-the-light-part2.jpg)
 
-> **完整正片**：8′09″ / 1080p 的文件是 577 MB，超过 GitHub 的单文件上限（仓库 100 MB、Release 200 MB），
-> 所以不放仓库里。观看入口见 [Releases](../../releases) 与置顶 issue 中的外链。
+> **完整正片**（Bilibili）：<https://www.bilibili.com/video/BV1ahp96cEND/>
+>
+> 成片 577 MB，超过 GitHub 的单文件上限（仓库 100 MB / Release 200 MB），所以不放仓库里，
+> 由上面的外链承载。仓库保留的是**能完整重现这些画面的代码与模板**。
 
 ---
 
@@ -62,7 +65,7 @@ src/
   scenes/
     film.js      与作品无关的通用镜头助手（天空、地面、雪、字幕、转场）
     snow.js      《雪夜灯火》     tree.js  《最后一棵树》
-    whisper.js   《Whisper Of Hope》
+    demo.js      引擎自检用的演示场景
 ```
 
 光照有一条硬规则：**所有光源走同一个入口**（地面光斑 / 空气辉光 / 核心光晕 / 贴面光），外圈用饱和色、只有极小核心用近白，并且"光必须落在物体上"——画面里不允许存在没照亮任何东西的光。
@@ -86,10 +89,13 @@ node render.mjs --strip=239:240 --out=out/strip.jpg
 
 # 出片：并行渲帧 → 编码（--range 单位是秒，可只渲一镜）
 node render.mjs --frames --range=0:335.1 --workers=4
-node render.mjs --encode --audio=assets/sacred_padded.m4a --out=out/part1.mp4
+node render.mjs --encode --out=out/part1.mp4
 ```
 
 第二部用 `--studio=studio2.html`。
+
+**音轨不在仓库里**（版权与授权原因未随代码分发）。要带声出片，把 `--audio=<你的音乐文件>` 加到
+`--encode` 上即可；`src/config.js` 里的 `audio` 字段同理，指向本地文件。不加这个参数也能出片，只是静音。
 
 ---
 
@@ -123,7 +129,6 @@ node render.mjs --encode --audio=assets/sacred_padded.m4a --out=out/part1.mp4
 | `MV_WORKFLOW.md` | 从一首歌到一支成片的完整工序（写给执行者，含闸门与验收标准） |
 | `ANIMATION_GUIDE.md` | 动画语言与引擎 API 的规则集：构图、光、尺度、连续性、什么算 bug |
 | `SCRIPT_V3.md` | 《Seed of The Light》分镜剧本 |
-| `STORYBOARD.md` | 分镜表 |
 
 ---
 
@@ -137,10 +142,14 @@ AI 承担的是制作组的工作：把口头意见翻译成可执行的代码�
 
 ---
 
-## 授权
+## 授权与出处
 
-代码与文档采用 MIT 许可证，见 [LICENSE](LICENSE)。
+本仓库的引擎脱胎于 [ClaudeAnimationBase](https://github.com/JohnHeibel/ClaudeAnimationBase)（MIT，© John Heibel），
+并沿用同一份 MIT 许可证——完整条款见 [LICENSE](LICENSE)，其中的版权声明属于上游，按 MIT 要求保留。
+
+在此之上的改动、两部作品的画面脚本、分镜与制作文档，作者为 **Zhongzheng Bao**。
+片名卡上的署名即此人；仓库内 `stills/` 的关键帧取自未匿名的正式版。
 
 片中字体为 Google Fonts 下的 Caveat、Patrick Hand、Homemade Apple（SIL Open Font License），位于 `assets/fonts/`。
 
-© Zhongzheng Bao
+作品视频（Bilibili）：《Seed of The Light》 <https://www.bilibili.com/video/BV1ahp96cEND/>
