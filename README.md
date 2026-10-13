@@ -1,165 +1,90 @@
 # CodeAnimation
 
-![冰湖下的三张坏脸——紫火把、蓝提灯、绿灯笼](stills/hero.jpg)
+![Seed of The Light](stills/hero.jpg)
 
-**用纯代码画动画，而不是用扩散模型生成画面。**
+Hand-painted animation, drawn by code. No diffusion model, no image generator — every pixel on
+screen is painted at render time by a p5.brush stroke engine.
 
-> *Creating animations with pure coding instead of any diffusion model.*
+The engine is separate from the films. A film is one scene file, one entry page and one config
+row; the engine never learns what any of them are about.
 
-这里存放的是一套手绘风 2D 动画引擎，以及用它做出来的作品。引擎与作品分开：引擎不认识任何一部片子的剧情，每一部作品只是"一个场景文件 + 一个入口 html + 一段配置"。
+## Seed of The Light
 
----
+*a short film in two parts* · 8 min 09 s · 1920×1080 @ 24 fps · 11,732 frames
 
-## 作品
+A light-bringer crosses a starving snow village and meets three men who sell light as bait — a
+violet torch, a blue lantern, a green lamp. On the stump-field where the forest used to be, he
+buries the one thing he has left. Years later, a city has grown up around the tree it became.
 
-| 作品 | 长度 | 规格 | 状态 |
-|---|---|---|---|
-| **《Seed of The Light》**（两部连映：《雪夜灯火》+《最后一棵树》） | 8′09″ | 1920×1080 @ 24 fps，11 732 帧 | 处女作 · 已完成 |
+**Part One — Lanterns on a Snowy Night**
 
-引擎不为这一部写死；下一部作品会沿用同一套 `core / clawd / props / jobs`，只换场景文件与配置。
+![Part One](stills/part-one.jpg)
 
-### 《Seed of The Light》
+**Part Two — The Last Tree**
 
-一部关于"栽树"与"乘凉"的两联画。第一部是北方的雪村：三种诱饵之光（紫火把、蓝提灯、绿灯笼）与一支真正给出的蜡烛；一个人在被砍秃的桩地上埋下一粒种子。第二部跳到未来：河死了，而那粒种子长成的树还在。
+![Part Two](stills/part-two.jpg)
 
-第一部 ·《雪夜灯火》——片名、奸商的蓝提灯、冰湖下的三张坏脸：
+Watch: <https://www.bilibili.com/video/BV1ahp96cEND/>
 
-![Seed of The Light — Part I](stills/seed-of-the-light-part1.jpg)
+## How it works
 
-第二部 ·《最后一棵树》——死河、光穹，以及恢复后的林子：
+**Every frame is a pure function of `t`.** That one rule implies the rest of the engine: frames
+render out of order and in parallel, so `Math.random()` is banned outright — paper grain, stroke
+wobble and body tremor all derive from `hash(floor(t*24))`. Any frame can be re-rendered alone,
+which is why fixing one shot costs one shot and not one film.
 
-![Seed of The Light — Part II](stills/seed-of-the-light-part2.jpg)
+The hand-drawn look is not a texture. p5.brush simulates pencil and watercolour edges, bleed and
+grain, and outlines "boil" on the beat: animation tremor, not noise. Cuts land on bar lines and
+walk cycles are locked to the music.
 
-> **完整正片**（Bilibili）：<https://www.bilibili.com/video/BV1ahp96cEND/>
->
-> 成片 577 MB，超过 GitHub 的单文件上限（仓库 100 MB / Release 200 MB），所以不放仓库里，
-> 由上面的外链承载。仓库保留的是**能完整重现这些画面的代码与模板**。
+Light obeys one rule — every source goes through the same entry point and must fall on something.
+No light in these films illuminates nothing.
 
----
+## Layout
 
-## 它是怎么做出来的
+    src/
+      core.js        stroke + fill primitives, paper texture, camera transform
+      clawd.js       the character: 5 views, mouth/eye/posture/light layers, expression table, gait
+      props.js       prop library: trees, lanterns, torches, snow, glows, face light
+      jobs.js        costumes: one body, dressed as villager, huckster, thief, lumberjack, santa
+      timeline.js    maps each shot on the time axis to a scene function
+      config.js      per-film duration / bpm / first beat / audio
+      scenes/
+        film.js      film-agnostic helpers: sky, ground, snow, captions, transitions
+        snow.js      Part One          tree.js      Part Two
+    render.mjs       headless Chrome renderer: contact sheets, frame batches, encode
+    templates/       the character and prop sheets every asset was checked against
+    stills/          frames from the finished film
 
-**每一帧都是时间 `t` 的纯函数。** 这是整个引擎唯一不可让步的约束，其余规则都从它推出来：
+## Quick start
 
-- 渲染是**乱序 + 并行**的，所以全局禁用 `Math.random()`。所有纸纹、笔触扰动、姿态抖动都由 `hash(⌊t·24⌋)` 派生——同一帧在任何一次运行里都长得一模一样，可以只重渲一镜、一拍，甚至一帧。
-- 手绘感不是贴图，是**笔触模拟**：`p5.brush` 负责铅笔/水彩的边缘、洇墨与纸纹。角色轮廓按节拍"沸腾"，得到动画的颤动而不是噪点。
-- 剪辑点全部落在**小节线**上。步态与音乐节拍锁定（beat-locked gait），转身经关键朝向插值并带 smear。
+    npm install        # p5, p5.brush, puppeteer-core  (needs Chrome; ffmpeg on PATH to encode)
 
-### 技术栈
+    node render.mjs --sheet=0,20,40,60 --out=out/sheet.jpg     # look at some moments
+    node render.mjs --strip=239:240 --out=out/strip.jpg        # every frame in a stretch
+    node render.mjs --frames --range=0:335.1 --workers=4       # render frames (resumable)
+    node render.mjs --encode --out=out/part-one.mp4            # frames -> mp4
 
-| 层 | 实现 |
-|---|---|
-| 绘制 | [p5.js 2.3.3](https://p5js.org/) + [p5.brush 2.2.3](https://github.com/p5brush/p5brush) · WebGL |
-| 渲染 | Node.js + `puppeteer-core` 无头 Chrome，多 worker 并行出帧，可断点续渲 |
-| 合成 | ffmpeg（H.264 / AAC，音轨在编码时混入） |
+Pass `--studio=studio2.html` for Part Two, and `--audio=<file>` to `--encode` to mux sound.
 
-### 引擎结构
+## Making a new film
 
-```
-src/
-  core.js        笔触与填充的统一入口（paint / inkLine / 纸纹 / 相机变换）
-  clawd.js       角色系统：5 个朝向、口型·眼神·体态·受光分层、表情表、步态
-  props.js       道具库：树、灯笼、火把、雪堆、光斑、光晕、贴面光……
-  jobs.js        角色服装库：同一副身体穿成村民、奸商、盗贼、樵夫、圣诞老人
-  timeline.js    镜头分派：把时间轴上的每个镜头接到对应场景函数
-  sheets.js      模板检查表的渲染器（见 templates/）
-  config.js      每部作品的时长 / BPM / 首拍偏移 / 音轨
-  scenes/
-    film.js      与作品无关的通用镜头助手（天空、地面、雪、字幕、转场）
-    snow.js      《雪夜灯火》     tree.js  《最后一棵树》
-    demo.js      引擎自检用的演示场景
-```
+1. Write a scene file in `src/scenes/` and hook its shots up through `timeline.js`.
+2. Copy an entry page, set `window.PART`, and load only your scene file.
+3. Add a `{ duration, bpm, offset, audio }` row for that `PART` in `src/config.js`.
 
-光照有一条硬规则：**所有光源走同一个入口**（地面光斑 / 空气辉光 / 核心光晕 / 贴面光），外圈用饱和色、只有极小核心用近白，并且"光必须落在物体上"——画面里不允许存在没照亮任何东西的光。
+`core`, `clawd`, `props` and `jobs` stay untouched. If a new film needs a new prop or expression,
+it goes into the library — the library is meant to grow.
 
-尺度也有一条：道具一律以**主角身高**为单位定标，形成全片统一的尺度表，所以"这栋楼是角色的几倍"在画面上就是它看起来的那个数。
+## Docs
 
----
+- `docs/ANIMATION_GUIDE.md` — the rule set: composition, light, scale, continuity, what counts as a bug
+- `docs/MV_WORKFLOW.md` — the end-to-end process from a song to a finished film
+- `docs/SCRIPT_V3.md` — shot-by-shot script of this film
 
-## 快速开始
+## Credits
 
-需要 Node.js 与一个可调用的 Chrome / Chromium；合成音轨需要 ffmpeg（自行安装，仓库不内置二进制）。
-
-```bash
-npm install
-
-# 看一眼：抽若干时刻拼成接触表
-node render.mjs --sheet=0,20,40,60 --out=out/sheet.jpg
-
-# 逐帧细节：某个时间区间内的每一帧
-node render.mjs --strip=239:240 --out=out/strip.jpg
-
-# 出片：并行渲帧 → 编码（--range 单位是秒，可只渲一镜）
-node render.mjs --frames --range=0:335.1 --workers=4
-node render.mjs --encode --out=out/part1.mp4
-```
-
-第二部用 `--studio=studio2.html`。
-
-**音轨不在仓库里**（版权与授权原因未随代码分发）。要带声出片，把 `--audio=<你的音乐文件>` 加到
-`--encode` 上即可；`src/config.js` 里的 `audio` 字段同理，指向本地文件。不加这个参数也能出片，只是静音。
-
-### 文档里提到、但刻意没打包的东西
-
-| 路径 | 为什么没有 |
-|---|---|
-| `bin/ffmpeg.exe` | 第三方二进制，自行安装即可（`render.mjs` 会直接 spawn `ffmpeg`） |
-| `assets/*.mp3` / `*.m4a` | 音轨授权不明，不随仓库分发 |
-| `tools/` | 一次性分析脚本，未纳入版本管理，也不属于引擎 |
-
----
-
-## 模板库 `templates/`
-
-角色、道具、表情、朝向都不是凭空画的，而是先渲成**检查表**、人工核对过尺度与画法，再进场景。`templates/` 就是这些核对用的图：
-
-- `characters/` — 角色卡（村民、奸商、盗贼、樵夫、城里人、孩子、圣诞老人…）、朝向表、表情表、手持物表
-- `props/` — 道具分册（街具、树、生活物、冷光暖光对照、事件微动作…）
-
-每张表上的格子都站着一只"一个主角高"的灰色参考角色，所以比例可以直接读出来。
-
----
-
-## 再加一部作品
-
-引擎不为任何一部片子写死。新增一部只需要三步：
-
-1. 写一个场景文件 `src/scenes/<work>.js`，用 `timeline.js` 的分派接口把镜头接到场景函数上；
-2. 复制一个入口 html（`studio.html` 是最小样板），设好 `window.PART` 并只加载这一个场景文件；
-3. 在 `src/config.js` 里为这个 `PART` 加一条 `{ duration, bpm, offset, audio }`。
-
-`clawd.js` / `props.js` / `jobs.js` / `core.js` 不需要改动。如果新的画法确实需要新道具或新表情，加进库里——**库会因为新作品而变厚，这是设计意图**。
-
----
-
-## 文档 `docs/`
-
-| 文件 | 内容 |
-|---|---|
-| `MV_WORKFLOW.md` | 从一首歌到一支成片的完整工序（写给执行者，含闸门与验收标准） |
-| `ANIMATION_GUIDE.md` | 动画语言与引擎 API 的规则集：构图、光、尺度、连续性、什么算 bug |
-| `SCRIPT_V3.md` | 《Seed of The Light》分镜剧本 |
-
----
-
-## 关于 AI 的角色
-
-这部片子里 **AI 没有画过任何一个像素**——画面全部由代码实时绘制，没有任何扩散模型或视频生成模型参与。
-
-AI 承担的是制作组的工作：把口头意见翻译成可执行的代码改动、按剧本逐镜生成场景、并行渲帧、在指定帧上做取证比对、维护问题清单。文化立意、美术判断和每一轮的观片取舍由人完成。
-
-一条纪律贯穿始终：**任何"已修复"的结论必须由成片帧证明，不许凭 diff 声称。** 这条规矩拦下过不少错误诊断——比如"灯没有大光晕"，第一版去加光晕层数，真因却是光晕圆心算到了灯体之外，画出来是一盏灯下面飘着一颗球。
-
----
-
-## 授权与出处
-
-本仓库的引擎脱胎于 [ClaudeAnimationBase](https://github.com/JohnHeibel/ClaudeAnimationBase)（MIT，© John Heibel），
-并沿用同一份 MIT 许可证——完整条款见 [LICENSE](LICENSE)，其中的版权声明属于上游，按 MIT 要求保留。
-
-在此之上的改动、两部作品的画面脚本、分镜与制作文档，作者为 **Zhongzheng Bao**。
-片名卡上的署名即此人；仓库内 `stills/` 的关键帧取自未匿名的正式版。
-
-片中字体为 Google Fonts 下的 Caveat、Patrick Hand、Homemade Apple（SIL Open Font License），位于 `assets/fonts/`。
-
-作品视频（Bilibili）：《Seed of The Light》 <https://www.bilibili.com/video/BV1ahp96cEND/>
+Animated by **Zhongzheng Bao**. The engine builds on
+[ClaudeAnimationBase](https://github.com/JohnHeibel/ClaudeAnimationBase) by John Heibel; both are
+MIT licensed, see [LICENSE](LICENSE). Fonts are Caveat, Patrick Hand and Homemade Apple (SIL OFL),
+in `assets/fonts/`.
