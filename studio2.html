@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Seed of The Light · Part II</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=block">
+<style>
+  @font-face {
+    font-family: 'Homemade Apple';
+    src: url('assets/fonts/HomemadeApple.woff2') format('woff2');
+    font-weight: 400; font-style: normal; font-display: block;
+  }
+  /* 候选手写体（本地 vendor，不走 CDN）：片名/字幕/对话云要能被 OCR 认出来，见 ISSUES_BACKLOG */
+  @font-face { font-family: 'Patrick Hand';    src: url('assets/fonts/PatrickHand.woff2') format('woff2');     font-weight: 400; font-display: block; }
+  @font-face { font-family: 'Caveat'; src: url('assets/fonts/Caveat.woff2') format('woff2'); font-weight: 400 700; font-display: block; }
+
+  html, body { margin: 0; background: #1b1820; color: #eee; font: 13px system-ui, sans-serif; }
+  main { padding: 12px; display: grid; gap: 8px; }
+  #out { width: min(100%, 1280px); aspect-ratio: 16 / 9; height: auto; background: #F3EBDC; }
+  .p5Canvas { display: none !important; }
+  .bar { display: flex; gap: 10px; align-items: center; max-width: 1280px; }
+  #scrub { flex: 1; }
+  #tt { font-variant-numeric: tabular-nums; min-width: 190px; }
+</style>
+<script src="node_modules/p5/lib/p5.min.js"></script>
+<script src="node_modules/p5.brush/dist/p5.brush.js"></script>
+<script>window.PART = 2;</script>
+</head>
+<body>
+<main>
+  <canvas id="out" width="1920" height="1080"></canvas>
+  <div class="bar"><input id="scrub" type="range" min="0" max="11" step="0.0417" value="0"><span id="tt">loading…</span></div>
+</main>
+<!-- engine -->
+<script src="src/config.js"></script>
+<script src="src/core.js"></script>
+<script src="src/clawd.js"></script>
+<script src="src/timeline.js"></script>
+<!-- reference sheets (standalone loops) -->
+<script src="src/sheets.js"></script>
+<script src="src/jobs.js"></script>
+<script src="src/props.js"></script>
+<!-- the film -->
+<script src="src/scenes/film.js"></script>
+<script src="src/scenes/tree.js"></script>
+<script>
+  // Open studio2.html?loop=emotions (or views) to scrub a standalone loop instead of the video.
+  const q = new URLSearchParams(location.search).get('loop'); if (q && LOOPS[q]) window.LOOP = LOOPS[q];
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "codeanimation",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "description": "Hand-painted 2D animation rendered as a pure function of time: a p5.brush engine plus the works made with it.",
+  "scripts": {
+    "sheet": "node render.mjs --sheet=0,20,40,60,80,100 --out=out/sheet.jpg",
+    "video": "node render.mjs --clip --out=out/video.mp4"
+  },
+  "dependencies": {
+    "p5": "^2.3.3",
+    "p5.brush": "^2.2.3",
+    "puppeteer-core": "^25.11.0"
+  }
+}
